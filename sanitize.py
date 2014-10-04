@@ -24,6 +24,10 @@ def main():
         usage()
     args = Args(float(sys.argv[1]))
     print_call(args)
+    # build graph
+    # add noise to pairs
+    # compute approximation
+    # get errors
 
 if __name__ == '__main__':
     main()
