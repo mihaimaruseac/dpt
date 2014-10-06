@@ -24,7 +24,11 @@ def main():
         usage()
     args = Args(float(sys.argv[1]))
     print_call(args)
-    # build graph
+    # TODO:  build graph
+    graph = numpy.ones(3) - numpy.eye(3)
+    print "Graph is:\n", graph
+    transactions = [(1, 2), (1, 2, 3), (2, 3), (1, 3)]
+    print "Transactions:\n", transactions
     # add noise to pairs
     # compute approximation
     # get errors
