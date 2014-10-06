@@ -62,6 +62,26 @@ def main():
         noisy_pairs_array[k] = noisy_pairs[k]
     print noisy_pairs_array
     # compute approximation
+    dim = nodes + 1
+    equation_matrix = numpy.zeros([2 * dim, dim * (dim - 1)])
+    b = numpy.zeros([2 * dim, 1])
+    for i in xrange(nodes+1):
+        for j in xrange(nodes+1):
+            pass
+    #sums = {}
+    #for i in xrange(nodes + 1):
+    #    s1 = s2 = 0
+    #    for k in noisy_pairs:
+    #        if k[0] == i: s1 += noisy_pairs[k]
+    #        if k[1] == i: s1 += noisy_pairs[k]
+    #    sums[i] = (s1 + s2) / 2
+    #equation_matrix = numpy.zeros([2 * len(sums), 2 * len(sums)])
+    #b = numpy.zeros([2 * len(sums), 1])
+    #for i in xrange(2 * len(sums)):
+    #    j = i % len(sums)
+    #    b[(i,0)] = sums[j]
+    print equation_matrix
+    print b
     # get errors
 
 if __name__ == '__main__':
