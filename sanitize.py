@@ -21,7 +21,7 @@ def usage():
 
 def convert_pairs_counts_to_matrix(pairs, nodes):
     """
-    Convert a dictionary { (i, j): v } to numpy matrix m[i][j] = v.
+    Converts a dictionary { (i, j): v } to numpy matrix m[i][j] = v.
     Assume 0 <= i,j < nodes.
     """
     ret = numpy.zeros([nodes + 1, nodes + 1])
