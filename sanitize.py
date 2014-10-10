@@ -19,6 +19,16 @@ def usage():
     print "\t{0} epsilon".format(sys.argv[0])
     sys.exit(-1)
 
+def convert_pairs_counts_to_matrix(pairs, nodes):
+    """
+    Convert a dictionary of pairs { (i, j): v } to numpy matrix m such that
+    m[i][j] = v. Assume 0 <= i,j < nodes
+    """
+    ret = numpy.zeros([nodes + 1, nodes + 1])
+    for k in pairs:
+        ret[k] = pairs[k]
+    return ret
+
 def main():
     if len(sys.argv) != 2:
         usage()
@@ -44,10 +54,7 @@ def main():
                 raise Exception("Invalid transaction found " + t)
             real_pairs[edge] += 1
     print "Real pair counts:\n", real_pairs
-    real_pairs_array = numpy.zeros([nodes + 1, nodes + 1])
-    for k in real_pairs:
-        real_pairs_array[k] = real_pairs[k]
-    print real_pairs_array
+    print convert_pairs_counts_to_matrix(real_pairs, nodes)
     # add noise to pairs
     noisy_pairs = {}
     for k in real_pairs:
@@ -57,10 +64,7 @@ def main():
             (2, 0): 1.03, (2, 1): 0, (2, 3): 2.01,
             (3, 0): 2.72, (3, 1): 0.18, (3, 2):-0.25}
     print "Noisy pair counts:\n", noisy_pairs
-    noisy_pairs_array = numpy.zeros([nodes + 1, nodes + 1])
-    for k in noisy_pairs:
-        noisy_pairs_array[k] = noisy_pairs[k]
-    print noisy_pairs_array
+    print convert_pairs_counts_to_matrix(noisy_pairs, nodes)
     # compute approximation
     dim = nodes + 1
     equation_matrix = numpy.zeros([2 * dim, len(noisy_pairs)])
@@ -87,10 +91,7 @@ def main():
     for j in xrange(len(noisy_pairs)):
         filtered_pairs[noisy_pairs.keys()[j]] = sol[(j,0)] + noisy_pairs.values()[j]
     print filtered_pairs
-    filtered_pairs_array = numpy.zeros([nodes + 1, nodes + 1])
-    for k in filtered_pairs:
-        filtered_pairs_array[k] = filtered_pairs[k]
-    print filtered_pairs_array
+    print convert_pairs_counts_to_matrix(filtered_pairs, nodes)
     # get errors
 
 if __name__ == '__main__':
