@@ -63,25 +63,34 @@ def main():
     print noisy_pairs_array
     # compute approximation
     dim = nodes + 1
-    equation_matrix = numpy.zeros([2 * dim, dim * (dim - 1)])
+    equation_matrix = numpy.zeros([2 * dim, len(noisy_pairs)])
     b = numpy.zeros([2 * dim, 1])
     for i in xrange(nodes+1):
-        for j in xrange(nodes+1):
-            pass
-    #sums = {}
-    #for i in xrange(nodes + 1):
-    #    s1 = s2 = 0
-    #    for k in noisy_pairs:
-    #        if k[0] == i: s1 += noisy_pairs[k]
-    #        if k[1] == i: s1 += noisy_pairs[k]
-    #    sums[i] = (s1 + s2) / 2
-    #equation_matrix = numpy.zeros([2 * len(sums), 2 * len(sums)])
-    #b = numpy.zeros([2 * len(sums), 1])
-    #for i in xrange(2 * len(sums)):
-    #    j = i % len(sums)
-    #    b[(i,0)] = sums[j]
+        s0 = s1 = 0
+        for j in xrange(len(noisy_pairs)):
+            p = noisy_pairs.keys()[j]
+            if p[0] == i:
+                equation_matrix[(2*i,j)] = 1
+                s0 += noisy_pairs[p]
+            if p[1] == i:
+                equation_matrix[(2*i+1,j)] = 1
+                s1 += noisy_pairs[p]
+        s = (s0 + s1) / 2
+        b[2*i] = s - s0
+        b[2*i + 1] = s - s1
     print equation_matrix
     print b
+    print numpy.linalg.matrix_rank(equation_matrix)
+    sol = numpy.linalg.lstsq(equation_matrix, b)[0]
+    print sol
+    filtered_pairs = {}
+    for j in xrange(len(noisy_pairs)):
+        filtered_pairs[noisy_pairs.keys()[j]] = sol[(j,0)] + noisy_pairs.values()[j]
+    print filtered_pairs
+    filtered_pairs_array = numpy.zeros([nodes + 1, nodes + 1])
+    for k in filtered_pairs:
+        filtered_pairs_array[k] = filtered_pairs[k]
+    print filtered_pairs_array
     # get errors
 
 if __name__ == '__main__':
