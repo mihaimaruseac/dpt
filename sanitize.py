@@ -10,14 +10,14 @@ class Args:
     def __init__(self, epsilon):
         self.epsilon = epsilon
 
-def print_call(args):
-    print "Called with\n\tepsilon = {:5.2f}".format(args.epsilon)
-
 def usage():
     print sys.argv[0], ": Differentially private trajectory mining"
     print "Usage:"
     print "\t{0} epsilon".format(sys.argv[0])
     sys.exit(-1)
+
+def print_call(args):
+    print "Called with\n\tepsilon = {:5.2f}".format(args.epsilon)
 
 def convert_pairs_counts_to_matrix(pairs, nodes):
     """
