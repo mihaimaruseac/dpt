@@ -29,6 +29,29 @@ def convert_pairs_counts_to_matrix(pairs, nodes):
         ret[k] = pairs[k]
     return ret
 
+def get_real_counts(graph, nodes, transactions, lmax, size=2):
+    """
+    Returns the real counts for all subtransactions of length size. Counts
+    only the possible subpaths in the given graph. Graph is given as a numpy
+    matrix -- the adjacency matrix -- and transactions as a list of lists.
+    """
+    if size != 2:
+        raise Exception("Cases for size > 2 not implemented yet!")
+    # TODO: size, lmax
+    ret = {}
+    for i in xrange(1, nodes+1):
+        ret[(0, i)] = ret[(i, 0)] = 0
+        for j in xrange(1, nodes+1):
+            if graph[i-1][j-1]:
+                ret[(i, j)] = 0
+    for t in transactions:
+        t = [0] + t + [0] # add extra edge
+        for edge in zip(t, t[1:]):
+            if not ret.has_key(edge):
+                raise Exception("Invalid transaction found " + t)
+            ret[edge] += 1
+    return ret
+
 def main():
     if len(sys.argv) != 2:
         usage()
@@ -41,18 +64,7 @@ def main():
     print "Graph is:\n", graph
     transactions = [[1, 2], [1, 2, 3], [2, 3], [1, 3]]
     print "Transactions:\n", transactions
-    real_pairs = {}
-    for i in xrange(1, nodes+1):
-        real_pairs[(0, i)] = real_pairs[(i, 0)] = 0
-        for j in xrange(1, nodes+1):
-            if graph[i-1][j-1]:
-                real_pairs[(i, j)] = 0
-    for t in transactions:
-        t = [0] + t + [0] # add extra edge
-        for edge in zip(t, t[1:]):
-            if not real_pairs.has_key(edge):
-                raise Exception("Invalid transaction found " + t)
-            real_pairs[edge] += 1
+    real_pairs = get_real_counts(graph, nodes, transactions, lmax)
     print "Real pair counts:\n", real_pairs
     print convert_pairs_counts_to_matrix(real_pairs, nodes)
     # add noise to pairs
