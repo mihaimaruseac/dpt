@@ -66,6 +66,33 @@ def add_noise(counts, sensitivity, epsilon):
             (3, 0): 2.72, (3, 1): 0.18, (3, 2):-0.25}
     return ret
 
+def postprocess(noisy_counts, nodes):
+    dim = nodes + 1
+    A = numpy.zeros([2 * dim, len(noisy_counts)])
+    b = numpy.zeros([2 * dim, 1])
+    ret =  {}
+    for i in xrange(nodes+1):
+        s0 = s1 = 0
+        for j in xrange(len(noisy_counts)):
+            p = noisy_counts.keys()[j]
+            if p[0] == i:
+                A[(2*i,j)] = 1
+                s0 += noisy_counts[p]
+            if p[1] == i:
+                A[(2*i+1,j)] = 1
+                s1 += noisy_counts[p]
+        s = (s0 + s1) / 2
+        b[2*i] = s - s0
+        b[2*i + 1] = s - s1
+    print A
+    print b
+    print numpy.linalg.matrix_rank(A)
+    sol = numpy.linalg.lstsq(A, b)[0]
+    print sol
+    for j in xrange(len(noisy_counts)):
+        ret[noisy_counts.keys()[j]] = sol[(j,0)] + noisy_counts.values()[j]
+    return ret
+
 def main():
     if len(sys.argv) != 2:
         usage()
@@ -86,30 +113,7 @@ def main():
     print "Noisy pair counts:\n", noisy_pairs
     print convert_pairs_counts_to_matrix(noisy_pairs, nodes)
     # compute approximation
-    dim = nodes + 1
-    equation_matrix = numpy.zeros([2 * dim, len(noisy_pairs)])
-    b = numpy.zeros([2 * dim, 1])
-    for i in xrange(nodes+1):
-        s0 = s1 = 0
-        for j in xrange(len(noisy_pairs)):
-            p = noisy_pairs.keys()[j]
-            if p[0] == i:
-                equation_matrix[(2*i,j)] = 1
-                s0 += noisy_pairs[p]
-            if p[1] == i:
-                equation_matrix[(2*i+1,j)] = 1
-                s1 += noisy_pairs[p]
-        s = (s0 + s1) / 2
-        b[2*i] = s - s0
-        b[2*i + 1] = s - s1
-    print equation_matrix
-    print b
-    print numpy.linalg.matrix_rank(equation_matrix)
-    sol = numpy.linalg.lstsq(equation_matrix, b)[0]
-    print sol
-    filtered_pairs = {}
-    for j in xrange(len(noisy_pairs)):
-        filtered_pairs[noisy_pairs.keys()[j]] = sol[(j,0)] + noisy_pairs.values()[j]
+    filtered_pairs = postprocess(noisy_pairs, nodes)
     print filtered_pairs
     print convert_pairs_counts_to_matrix(filtered_pairs, nodes)
     # get errors
