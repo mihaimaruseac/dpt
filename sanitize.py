@@ -52,6 +52,20 @@ def get_real_counts(graph, nodes, transactions, lmax, size=2):
             ret[edge] += 1
     return ret
 
+def add_noise(counts, sensitivity, epsilon):
+    """
+    Add Laplace noise to all items in counts list.
+    """
+    # TODO: Remove fixed result
+    ret = {}
+    for k in counts:
+        ret[k] = counts[k] + numpy.random.laplace(scale=sensitivity/epsilon)
+    ret = {(0, 1): 3.03, (0, 2): 1.03, (0, 3): 0.27,
+            (1, 0): -0.35, (1, 2): 0.93, (1, 3): -0.53,
+            (2, 0): 1.03, (2, 1): 0, (2, 3): 2.01,
+            (3, 0): 2.72, (3, 1): 0.18, (3, 2):-0.25}
+    return ret
+
 def main():
     if len(sys.argv) != 2:
         usage()
@@ -68,13 +82,7 @@ def main():
     print "Real pair counts:\n", real_pairs
     print convert_pairs_counts_to_matrix(real_pairs, nodes)
     # add noise to pairs
-    noisy_pairs = {}
-    for k in real_pairs:
-        noisy_pairs[k] = real_pairs[k] + numpy.random.laplace(scale=(lmax+1)/args.epsilon)
-    noisy_pairs = {(0, 1): 3.03, (0, 2): 1.03, (0, 3): 0.27,
-            (1, 0): -0.35, (1, 2): 0.93, (1, 3): -0.53,
-            (2, 0): 1.03, (2, 1): 0, (2, 3): 2.01,
-            (3, 0): 2.72, (3, 1): 0.18, (3, 2):-0.25}
+    noisy_pairs = add_noise(real_pairs, lmax + 1, args.epsilon)
     print "Noisy pair counts:\n", noisy_pairs
     print convert_pairs_counts_to_matrix(noisy_pairs, nodes)
     # compute approximation
