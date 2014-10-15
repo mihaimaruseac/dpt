@@ -79,11 +79,8 @@ def postprocess(noisy_counts, nodes):
         s = (s0 + s1) / 2
         b[2*i] = s - s0
         b[2*i + 1] = s - s1
-    print A
-    print b
-    print numpy.linalg.matrix_rank(A)
+    assert numpy.linalg.matrix_rank(A) == 2 * dim - 1
     sol = numpy.linalg.lstsq(A, b)[0]
-    print sol
     for j in xrange(len(noisy_counts)):
         ret[noisy_counts.keys()[j]] = sol[(j,0)] + noisy_counts.values()[j]
     return ret
