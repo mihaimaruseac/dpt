@@ -54,16 +54,11 @@ def get_real_counts(graph, nodes, transactions, lmax, size=2):
 
 def add_noise(counts, sensitivity, epsilon):
     """
-    Add Laplace noise to all items in counts list.
+    Add Laplace noise to all items in counts dictionary.
     """
-    # TODO: Remove fixed result
     ret = {}
     for k in counts:
         ret[k] = counts[k] + numpy.random.laplace(scale=sensitivity/epsilon)
-    ret = {(0, 1): 3.03, (0, 2): 1.03, (0, 3): 0.27,
-            (1, 0): -0.35, (1, 2): 0.93, (1, 3): -0.53,
-            (2, 0): 1.03, (2, 1): 0, (2, 3): 2.01,
-            (3, 0): 2.72, (3, 1): 0.18, (3, 2):-0.25}
     return ret
 
 def postprocess(noisy_counts, nodes):
