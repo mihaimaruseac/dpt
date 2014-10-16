@@ -62,25 +62,29 @@ def add_noise(counts, sensitivity, epsilon):
     return ret
 
 def postprocess(noisy_counts, nodes):
+    """
+    Post process the noisy_counts to ensure sum consistency across rows and
+    columns of implied matrix.
+    """
     dim = nodes + 1
     A = numpy.zeros([2 * dim, len(noisy_counts)])
     b = numpy.zeros([2 * dim, 1])
-    ret =  {}
+    keys = noisy_counts.keys()
     for i in xrange(nodes+1):
-        s0 = s1 = 0
-        for j in xrange(len(noisy_counts)):
-            p = noisy_counts.keys()[j]
-            if p[0] == i:
-                A[(2*i,j)] = 1
-                s0 += noisy_counts[p]
-            if p[1] == i:
-                A[(2*i+1,j)] = 1
-                s1 += noisy_counts[p]
-        s = (s0 + s1) / 2
-        b[2*i] = s - s0
-        b[2*i + 1] = s - s1
+        s = [0, 0]
+        for j in xrange(len(keys)):
+            p = keys[j]
+            for k in [0, 1]:
+                if p[k] == i:
+                    A[(2 * i + k, j)] = 1
+                    s[k] += noisy_counts[p]
+        avg_s = sum(s) / 2
+        for k in [0, 1]:
+            b[2 * i + k] = avg_s - s[k]
     assert numpy.linalg.matrix_rank(A) == 2 * dim - 1
     sol = numpy.linalg.lstsq(A, b)[0]
+
+    ret =  {}
     for j in xrange(len(noisy_counts)):
         ret[noisy_counts.keys()[j]] = sol[(j,0)] + noisy_counts.values()[j]
     return ret
