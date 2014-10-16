@@ -86,7 +86,8 @@ def postprocess(noisy_counts, nodes):
 
     ret =  {}
     for j in xrange(len(noisy_counts)):
-        ret[noisy_counts.keys()[j]] = sol[(j,0)] + noisy_counts.values()[j]
+        k = keys[j]
+        ret[k] = sol[(j,0)] + noisy_counts[k]
     return ret
 
 def main():
