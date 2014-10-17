@@ -6,18 +6,14 @@ import sys
 import numpy
 import scipy
 
-class Args:
-    def __init__(self, epsilon):
-        self.epsilon = epsilon
-
 def usage():
     print sys.argv[0], ": Differentially private trajectory mining"
     print "Usage:"
     print "\t{0} epsilon".format(sys.argv[0])
     sys.exit(-1)
 
-def print_call(args):
-    print "Called with\n\tepsilon = {:5.2f}".format(args.epsilon)
+def print_call(epsilon):
+    print "Called with\n\tepsilon = {:5.2f}".format(epsilon)
 
 def convert_pairs_counts_to_matrix(pairs, nodes):
     """
@@ -90,11 +86,7 @@ def postprocess(noisy_counts, nodes):
         ret[k] = sol[(j,0)] + noisy_counts[k]
     return ret
 
-def main():
-    if len(sys.argv) != 2:
-        usage()
-    args = Args(float(sys.argv[1]))
-    print_call(args)
+def main(epsilon):
     # TODO:  build graph
     nodes = 3
     lmax = 3
@@ -106,7 +98,7 @@ def main():
     print "Real pair counts:\n", real_pairs
     print convert_pairs_counts_to_matrix(real_pairs, nodes)
     # add noise to pairs
-    noisy_pairs = add_noise(real_pairs, lmax + 1, args.epsilon)
+    noisy_pairs = add_noise(real_pairs, lmax + 1, epsilon)
     print "Noisy pair counts:\n", noisy_pairs
     print convert_pairs_counts_to_matrix(noisy_pairs, nodes)
     # compute approximation
@@ -114,6 +106,15 @@ def main():
     print filtered_pairs
     print convert_pairs_counts_to_matrix(filtered_pairs, nodes)
     # get errors
+    # TODO
 
 if __name__ == '__main__':
-    main()
+    if len(sys.argv) != 2:
+        usage()
+    try:
+        epsilon = float(sys.argv[1])
+    except Exception as e:
+        print e
+        usage()
+    print_call(epsilon)
+    main(epsilon)
