@@ -87,6 +87,7 @@ def postprocess(noisy_counts, nodes):
     return ret
 
 def main(epsilon):
+    numpy.set_printoptions(formatter={'float': '{: 0.3f}'.format})
     # TODO:  build graph
     nodes = 3
     lmax = 3
@@ -95,15 +96,15 @@ def main(epsilon):
     transactions = [[1, 2], [1, 2, 3], [2, 3], [1, 3]]
     print "Transactions:\n", transactions
     real_pairs = get_real_counts(graph, nodes, transactions, lmax)
-    print "Real pair counts:\n", real_pairs
+    print "Real pair counts:"
     print convert_pairs_counts_to_matrix(real_pairs, nodes)
     # add noise to pairs
     noisy_pairs = add_noise(real_pairs, lmax + 1, epsilon)
-    print "Noisy pair counts:\n", noisy_pairs
+    print "Noisy pair counts:"
     print convert_pairs_counts_to_matrix(noisy_pairs, nodes)
     # compute approximation
     filtered_pairs = postprocess(noisy_pairs, nodes)
-    print filtered_pairs
+    print "Final approximation:"
     print convert_pairs_counts_to_matrix(filtered_pairs, nodes)
     # get errors
     # TODO
