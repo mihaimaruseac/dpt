@@ -12,8 +12,8 @@ def usage():
     print "\t{0} epsilon nodes".format(sys.argv[0])
     sys.exit(-1)
 
-def print_call(epsilon, nodes):
-    print "Called with\n\tepsilon = {:5.2f}\n\tnodes = {:d}".format(epsilon, nodes)
+def print_call(*args):
+    print "Called with\n\tepsilon = {:5.2f}\n\tnodes = {:d}".format(*args)
 
 def convert_pairs_counts_to_matrix(pairs, nodes):
     """
