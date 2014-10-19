@@ -9,11 +9,11 @@ import scipy
 def usage():
     print sys.argv[0], ": Differentially private trajectory mining"
     print "Usage:"
-    print "\t{0} epsilon".format(sys.argv[0])
+    print "\t{0} epsilon nodes".format(sys.argv[0])
     sys.exit(-1)
 
-def print_call(epsilon):
-    print "Called with\n\tepsilon = {:5.2f}".format(epsilon)
+def print_call(epsilon, nodes):
+    print "Called with\n\tepsilon = {:5.2f}\n\tnodes = {:d}".format(epsilon, nodes)
 
 def convert_pairs_counts_to_matrix(pairs, nodes):
     """
@@ -86,10 +86,9 @@ def postprocess(noisy_counts, nodes):
         ret[k] = sol[(j,0)] + noisy_counts[k]
     return ret
 
-def main(epsilon):
+def main(epsilon, nodes):
     numpy.set_printoptions(formatter={'float': '{: 0.3f}'.format})
     # TODO:  build graph
-    nodes = 3
     lmax = 3
     graph = numpy.ones(nodes) - numpy.eye(nodes)
     print "Graph is:\n", graph
@@ -110,12 +109,13 @@ def main(epsilon):
     # TODO
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
+    if len(sys.argv) != 3:
         usage()
     try:
         epsilon = float(sys.argv[1])
+        nodes = int(sys.argv[2])
     except Exception as e:
         print e
         usage()
-    print_call(epsilon)
-    main(epsilon)
+    print_call(epsilon, nodes)
+    main(epsilon, nodes)
