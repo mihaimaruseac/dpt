@@ -44,7 +44,7 @@ def get_real_counts(graph, nodes, transactions, lmax, size=2):
         t = [0] + t + [0] # add extra edge
         for edge in zip(t, t[1:]):
             if not ret.has_key(edge):
-                raise Exception("Invalid transaction found " + t)
+                raise Exception("Invalid transaction found: {}".format(t))
             ret[edge] += 1
     return ret
 
