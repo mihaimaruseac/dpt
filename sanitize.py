@@ -1,19 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
 
-import sys
-
+import itertools
 import numpy
+import random
 import scipy
+import sys
 
 def usage():
     print sys.argv[0], ": Differentially private trajectory mining"
     print "Usage:"
-    print "\t{0} epsilon nodes".format(sys.argv[0])
+    print "\t{0} epsilon nodes lmax [seed]".format(sys.argv[0])
     sys.exit(-1)
 
 def print_call(*args):
-    print "Called with\n\tepsilon = {:5.2f}\n\tnodes = {:d}".format(*args)
+    print "Called with\n\
+            \tepsilon = {:5.2f}\n\
+            \tnodes = {:d}\n\
+            \tlmax = {:d}\n\
+            \tseed = {:d}\n\
+            ".format(*args)
 
 def convert_pairs_counts_to_matrix(pairs, nodes):
     """
@@ -86,36 +92,54 @@ def postprocess(noisy_counts, nodes):
         ret[k] = sol[(j,0)] + noisy_counts[k]
     return ret
 
-def main(epsilon, nodes):
+def env_setup(seed):
     numpy.set_printoptions(formatter={'float': '{: 0.3f}'.format})
-    # TODO:  build graph
-    lmax = 3
+    random.seed(seed)
+    numpy.random.seed(seed)
+
+def main(epsilon, nodes, lmax, seed):
+    env_setup(seed)
+
+    # Read graph
     graph = numpy.ones(nodes) - numpy.eye(nodes)
     print "Graph is:\n", graph
+
+    # Read transactions
+    frequencies = itertools.chain.from_iterable([[i] * i for i in xrange(1, nodes + 1)])
+    print list(frequencies)
+    for i in xrange(lmax):
+        pass
     transactions = [[1, 2], [1, 2, 3], [2, 3], [1, 3]]
     print "Transactions:\n", transactions
+
+    # Compute pair counts
     real_pairs = get_real_counts(graph, nodes, transactions, lmax)
     print "Real pair counts:"
     print convert_pairs_counts_to_matrix(real_pairs, nodes)
-    # add noise to pairs
+
+    # Add noise to pairs
     noisy_pairs = add_noise(real_pairs, lmax + 1, epsilon)
     print "Noisy pair counts:"
     print convert_pairs_counts_to_matrix(noisy_pairs, nodes)
-    # compute approximation
+
+    # Compute approximation
     filtered_pairs = postprocess(noisy_pairs, nodes)
     print "Final approximation:"
     print convert_pairs_counts_to_matrix(filtered_pairs, nodes)
-    # get errors
+
+    # Get errors
     # TODO
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
+    if len(sys.argv) not in [4, 5]:
         usage()
     try:
         epsilon = float(sys.argv[1])
         nodes = int(sys.argv[2])
+        lmax = int(sys.argv[3])
+        seed = 42 if len(sys.argv) == 4 else int(sys.argv[4])
     except Exception as e:
         print e
         usage()
-    print_call(epsilon, nodes)
-    main(epsilon, nodes)
+    print_call(epsilon, nodes, lmax, seed)
+    main(epsilon, nodes, lmax, seed)
