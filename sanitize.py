@@ -136,10 +136,17 @@ def main(epsilon, nodes, lmax, tmax, seed):
 
     # Get errors
     # TODO
-    fr = numpy.linalg.norm(convert_pairs_counts_to_matrix(filtered_pairs, nodes) - convert_pairs_counts_to_matrix(real_pairs, nodes), ord='fro')
-    nr = numpy.linalg.norm(convert_pairs_counts_to_matrix(noisy_pairs, nodes) - convert_pairs_counts_to_matrix(real_pairs, nodes), ord='fro')
-    fn = numpy.linalg.norm(convert_pairs_counts_to_matrix(filtered_pairs, nodes) - convert_pairs_counts_to_matrix(noisy_pairs, nodes), ord='fro')
+    P = convert_pairs_counts_to_matrix(real_pairs, nodes)
+    P_star = convert_pairs_counts_to_matrix(noisy_pairs, nodes)
+    P_hat = convert_pairs_counts_to_matrix(filtered_pairs, nodes)
+    fr = numpy.linalg.norm(P_hat - P, ord='fro')
+    nr = numpy.linalg.norm(P_star - P, ord='fro')
+    fn = numpy.linalg.norm(P_hat - P_star, ord='fro')
     print fr, nr, fn, fr <= nr + fn, fr <= nr
+    fre = sum(sum(abs(P_hat - P))) / nodes / (nodes - 1)
+    nre = sum(sum(abs(P_star - P))) / nodes / (nodes - 1)
+    fne = sum(sum(abs(P_hat - P_star))) / nodes / (nodes - 1)
+    print fre, nre, fne, fre <= nre + fne, fre <= nre
 
 if __name__ == '__main__':
     if len(sys.argv) not in [5, 6]:
