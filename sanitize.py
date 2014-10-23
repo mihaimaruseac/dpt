@@ -143,9 +143,9 @@ def main(epsilon, nodes, lmax, tmax, seed):
     nr = numpy.linalg.norm(P_star - P, ord='fro')
     fn = numpy.linalg.norm(P_hat - P_star, ord='fro')
     print fr, nr, fn, fr <= nr + fn, fr <= nr
-    fre = sum(sum(abs(P_hat - P))) / nodes / (nodes - 1)
-    nre = sum(sum(abs(P_star - P))) / nodes / (nodes - 1)
-    fne = sum(sum(abs(P_hat - P_star))) / nodes / (nodes - 1)
+    fre = sum(sum(abs(P_hat - P))) / len(noisy_pairs)
+    nre = sum(sum(abs(P_star - P))) / len(noisy_pairs)
+    fne = sum(sum(abs(P_hat - P_star))) / len(noisy_pairs)
     print fre, nre, fne, fre <= nre + fne, fre <= nre
 
 if __name__ == '__main__':
