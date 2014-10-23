@@ -136,9 +136,10 @@ def main(epsilon, nodes, lmax, tmax, seed):
 
     # Get errors
     # TODO
-    print numpy.linalg.norm(convert_pairs_counts_to_matrix(filtered_pairs, nodes) - convert_pairs_counts_to_matrix(real_pairs, nodes), ord='fro')
-    print numpy.linalg.norm(convert_pairs_counts_to_matrix(noisy_pairs, nodes) - convert_pairs_counts_to_matrix(real_pairs, nodes), ord='fro')
-    print numpy.linalg.norm(convert_pairs_counts_to_matrix(filtered_pairs, nodes) - convert_pairs_counts_to_matrix(noisy_pairs, nodes), ord='fro')
+    fr = numpy.linalg.norm(convert_pairs_counts_to_matrix(filtered_pairs, nodes) - convert_pairs_counts_to_matrix(real_pairs, nodes), ord='fro')
+    nr = numpy.linalg.norm(convert_pairs_counts_to_matrix(noisy_pairs, nodes) - convert_pairs_counts_to_matrix(real_pairs, nodes), ord='fro')
+    fn = numpy.linalg.norm(convert_pairs_counts_to_matrix(filtered_pairs, nodes) - convert_pairs_counts_to_matrix(noisy_pairs, nodes), ord='fro')
+    print fr, nr, fn, fr <= nr + fn, fr <= nr
 
 if __name__ == '__main__':
     if len(sys.argv) not in [5, 6]:
