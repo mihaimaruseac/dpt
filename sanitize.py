@@ -10,7 +10,7 @@ import sys
 def usage():
     print sys.argv[0], ": Differentially private trajectory mining"
     print "Usage:"
-    print "\t{0} epsilon nodes lmax [seed]".format(sys.argv[0])
+    print "\t{0} epsilon nodes lmax tmax [seed]".format(sys.argv[0])
     sys.exit(-1)
 
 def print_call(*args):
@@ -18,6 +18,7 @@ def print_call(*args):
             \tepsilon = {:5.2f}\n\
             \tnodes = {:d}\n\
             \tlmax = {:d}\n\
+            \ttmax = {:d}\n\
             \tseed = {:d}\n\
             ".format(*args)
 
@@ -97,7 +98,7 @@ def env_setup(seed):
     random.seed(seed)
     numpy.random.seed(seed)
 
-def main(epsilon, nodes, lmax, seed):
+def main(epsilon, nodes, lmax, tmax, seed):
     env_setup(seed)
 
     # Read graph
@@ -105,12 +106,18 @@ def main(epsilon, nodes, lmax, seed):
     print "Graph is:\n", graph
 
     # Read transactions
-    frequencies = itertools.chain.from_iterable([[i] * i for i in xrange(1, nodes + 1)])
-    print list(frequencies)
-    for i in xrange(lmax):
-        pass
-    transactions = [[1, 2], [1, 2, 3], [2, 3], [1, 3]]
-    print "Transactions:\n", transactions
+    frequencies = list(itertools.chain.from_iterable([
+        [i] * i for i in xrange(1, nodes + 1)]))
+    transactions = []
+    for i in xrange(tmax):
+        tlen = random.choice(xrange(3, lmax + 1))
+        t = [random.choice(frequencies)]
+        while len(t) < tlen:
+            e = random.choice(frequencies)
+            if e is not t[-1]:
+                t.append(e)
+        transactions.append(t)
+    #print "Transactions:\n", transactions
 
     # Compute pair counts
     real_pairs = get_real_counts(graph, nodes, transactions, lmax)
@@ -129,17 +136,21 @@ def main(epsilon, nodes, lmax, seed):
 
     # Get errors
     # TODO
+    print numpy.linalg.norm(convert_pairs_counts_to_matrix(filtered_pairs, nodes) - convert_pairs_counts_to_matrix(real_pairs, nodes), ord='fro')
+    print numpy.linalg.norm(convert_pairs_counts_to_matrix(noisy_pairs, nodes) - convert_pairs_counts_to_matrix(real_pairs, nodes), ord='fro')
+    print numpy.linalg.norm(convert_pairs_counts_to_matrix(filtered_pairs, nodes) - convert_pairs_counts_to_matrix(noisy_pairs, nodes), ord='fro')
 
 if __name__ == '__main__':
-    if len(sys.argv) not in [4, 5]:
+    if len(sys.argv) not in [5, 6]:
         usage()
     try:
         epsilon = float(sys.argv[1])
         nodes = int(sys.argv[2])
         lmax = int(sys.argv[3])
-        seed = 42 if len(sys.argv) == 4 else int(sys.argv[4])
+        tmax = int(sys.argv[4])
+        seed = 42 if len(sys.argv) == 5 else int(sys.argv[5])
     except Exception as e:
         print e
         usage()
-    print_call(epsilon, nodes, lmax, seed)
-    main(epsilon, nodes, lmax, seed)
+    print_call(epsilon, nodes, lmax, tmax, seed)
+    main(epsilon, nodes, lmax, tmax, seed)
