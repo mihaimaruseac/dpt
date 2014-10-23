@@ -144,26 +144,32 @@ def main(epsilon, nodes, lmax, tmax, seed):
     fn = numpy.linalg.norm(P_hat - P_star, ord='fro')
     print fr, nr, fn, fr <= nr + fn, fr <= nr
     fre = 0.0
+    cnt = 0
     for i in xrange(nodes + 1):
         for j in xrange(nodes + 1):
             loc = (i, j)
             if P[loc] != 0:
+                cnt += 1
                 fre += abs(P_hat[loc] - P[loc])/P[loc]
-    fre /= len(noisy_pairs)
+    fre /= cnt
     nre = 0.0
+    cnt = 0
     for i in xrange(nodes + 1):
         for j in xrange(nodes + 1):
             loc = (i, j)
             if P[loc] != 0:
+                cnt += 1
                 nre += abs(P_star[loc] - P[loc])/P[loc]
-    nre /= len(noisy_pairs)
+    nre /= cnt
     fne = 0.0
+    cnt = 0
     for i in xrange(nodes + 1):
         for j in xrange(nodes + 1):
             loc = (i, j)
             if P_star[loc] != 0:
+                cnt += 1
                 fne += abs(P_hat[loc] - P_star[loc])/P_star[loc]
-    fne /= len(noisy_pairs)
+    fne /= cnt
     print fre, nre, fne, fre <= nre + fne, fre <= nre
 
 if __name__ == '__main__':
