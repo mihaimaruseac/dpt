@@ -143,20 +143,26 @@ def main(epsilon, nodes, lmax, tmax, seed):
     nr = numpy.linalg.norm(P_star - P, ord='fro')
     fn = numpy.linalg.norm(P_hat - P_star, ord='fro')
     print fr, nr, fn, fr <= nr + fn, fr <= nr
-    fre = 0
-    for loc in zip(xrange(nodes + 1, nodes + 1)):
-        if P[loc]:
-            fre += abs(P_hat[loc] - P[loc])/P[loc]
+    fre = 0.0
+    for i in xrange(nodes + 1):
+        for j in xrange(nodes + 1):
+            loc = (i, j)
+            if P[loc] != 0:
+                fre += abs(P_hat[loc] - P[loc])/P[loc]
     fre /= len(noisy_pairs)
-    nre = 0
-    for loc in zip(xrange(nodes + 1, nodes + 1)):
-        if P[loc]:
-            nre += abs(P_star[loc] - P[loc])/P[loc]
+    nre = 0.0
+    for i in xrange(nodes + 1):
+        for j in xrange(nodes + 1):
+            loc = (i, j)
+            if P[loc] != 0:
+                nre += abs(P_star[loc] - P[loc])/P[loc]
     nre /= len(noisy_pairs)
-    fne = 0
-    for loc in zip(xrange(nodes + 1, nodes + 1)):
-        if P[loc]:
-            fne += abs(P_hat[loc] - P_star[loc])/P_star[loc]
+    fne = 0.0
+    for i in xrange(nodes + 1):
+        for j in xrange(nodes + 1):
+            loc = (i, j)
+            if P_star[loc] != 0:
+                fne += abs(P_hat[loc] - P_star[loc])/P_star[loc]
     fne /= len(noisy_pairs)
     print fre, nre, fne, fre <= nre + fne, fre <= nre
 
