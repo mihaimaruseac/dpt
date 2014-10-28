@@ -48,21 +48,21 @@ def get_real_counts(graph, nodes, transactions, lmax, size=2):
     only the possible subpaths in the given graph. Graph is given as a numpy
     matrix -- the adjacency matrix -- and transactions as a list of lists.
     """
-    if size != 2:
-        raise Exception("Cases for size > 2 not implemented yet!")
-    # TODO: size, lmax
     ret = {}
-    for i in xrange(1, nodes+1):
-        ret[(0, i)] = ret[(i, 0)] = 0
-        for j in xrange(1, nodes+1):
-            if graph[i-1][j-1]:
-                ret[(i, j)] = 0
+    for fragment in itertools.product(xrange(1, nodes+1), repeat=size - 1):
+        if is_path_in_graph(graph, fragment):
+            ret[tuple([0] + list(fragment))] = 0
+            ret[tuple(list(fragment) + [0])] = 0
+    for path in itertools.product(xrange(1, nodes+1), repeat=size):
+        if is_path_in_graph(graph, path):
+            ret[path] = 0
     for t in transactions:
-        t = [0] + t + [0] # add extra edge
-        for edge in zip(t, t[1:]):
-            if not ret.has_key(edge):
+        t = [0] + t + [0] # add extra edges to start and end
+        lists = [t[i:] for i in xrange(size)]
+        for path in itertools.izip(*lists):
+            if not ret.has_key(path):
                 raise Exception("Invalid transaction found: {}".format(t))
-            ret[edge] += 1
+            ret[path] += 1
     return ret
 
 def add_noise(counts, sensitivity, epsilon):
