@@ -22,12 +22,12 @@ def print_call(*args):
             \tseed = {:d}\n\
             ".format(*args)
 
-def convert_pairs_counts_to_matrix(pairs, nodes):
+def convert_pairs_counts_to_matrix(pairs, size):
     """
     Converts a dictionary { (i, j): v } to numpy matrix m[i][j] = v.
-    Assume 0 <= i,j < nodes.
+    Assume 0 <= i,j <= size.
     """
-    ret = numpy.zeros([nodes + 1, nodes + 1])
+    ret = numpy.zeros([size + 1, size + 1])
     for k in pairs:
         ret[k] = pairs[k]
     return ret
@@ -135,7 +135,6 @@ def main(epsilon, nodes, lmax, tmax, seed):
     print convert_pairs_counts_to_matrix(filtered_pairs, nodes)
 
     # Get errors
-    # TODO
     P = convert_pairs_counts_to_matrix(real_pairs, nodes)
     P_star = convert_pairs_counts_to_matrix(noisy_pairs, nodes)
     P_hat = convert_pairs_counts_to_matrix(filtered_pairs, nodes)
