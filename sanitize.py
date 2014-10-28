@@ -32,6 +32,16 @@ def convert_pairs_counts_to_matrix(pairs, size):
         ret[k] = pairs[k]
     return ret
 
+def is_path_in_graph(graph, path):
+    """
+    Returns True if path is a valid path in graph. Graph is given by the
+    adjancency matrix as a numpy matrix.
+    """
+    for i, j in zip(path, path[1:]):
+        if not graph[(i - 1, j - 1)]:
+            return False
+    return True
+
 def get_real_counts(graph, nodes, transactions, lmax, size=2):
     """
     Returns the real counts for all subtransactions of length size. Counts
