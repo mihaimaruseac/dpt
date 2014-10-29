@@ -123,9 +123,8 @@ def main(epsilon, nodes, lmax, tmax, seed):
         tlen = random.choice(xrange(3, lmax + 1))
         t = [random.choice(frequencies)]
         while len(t) < tlen:
-            e = random.choice(frequencies)
-            if e is not t[-1]:
-                t.append(e)
+            e = random.choice([n for n in frequencies if graph[(t[-1]-1, n-1)]])
+            t.append(e)
         transactions.append(t)
     #print "Transactions:\n", transactions
 
