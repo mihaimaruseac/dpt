@@ -95,6 +95,7 @@ def postprocess(noisy_counts, nodes):
         avg_s = sum(s) / 2
         for k in [0, 1]:
             b[2 * i + k] = avg_s - s[k]
+    print len(noisy_counts)
     print A
     print b
     print numpy.linalg.matrix_rank(A), 2 * dim - 1
@@ -145,6 +146,7 @@ def main(epsilon, nodes, lmax, tmax, size, seed):
     real_pairs = get_real_counts(graph, nodes, transactions, lmax, size)
     print "Real counts:"
     print real_pairs
+    print postprocess(real_pairs, nodes)
 
     # Add noise to pairs
     noisy_pairs = add_noise(real_pairs, lmax + 1, epsilon)
