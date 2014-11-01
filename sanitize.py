@@ -95,7 +95,10 @@ def postprocess(noisy_counts, nodes):
         avg_s = sum(s) / 2
         for k in [0, 1]:
             b[2 * i + k] = avg_s - s[k]
-    assert numpy.linalg.matrix_rank(A) == 2 * dim - 1
+    print A
+    print b
+    print numpy.linalg.matrix_rank(A), 2 * dim - 1
+    assert numpy.linalg.matrix_rank(A) <= 2 * dim - 1
     sol = numpy.linalg.lstsq(A, b)[0]
 
     ret =  {}
@@ -127,7 +130,7 @@ def main(epsilon, nodes, lmax, tmax, size, seed):
             e = random.choice([n for n in frequencies if graph[(t[-1]-1, n-1)]])
             t.append(e)
         transactions.append(t)
-    #print "Transactions:\n", transactions
+    print "Transactions:\n", transactions
 
     # Compute pair counts
     real_pairs = get_real_counts(graph, nodes, transactions, lmax, size)
