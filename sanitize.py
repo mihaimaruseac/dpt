@@ -107,6 +107,15 @@ def postprocess(noisy_counts, nodes):
         ret[k] = sol[(j,0)] + noisy_counts[k]
     return ret
 
+def compute_relative_error(term1, term2):
+    err = 0.0
+    cnt = 0
+    for k in term1.keys():
+        if term1[k] != 0:
+            cnt += 1
+            err += abs(term1[k] - term2[k])/abs(0.0 + term1[k])
+    return err/cnt
+
 def env_setup(seed):
     numpy.set_printoptions(formatter={'float': '{: 0.3f}'.format})
     random.seed(seed)
@@ -148,41 +157,10 @@ def main(epsilon, nodes, lmax, tmax, size, seed):
     print filtered_pairs
 
     # Get errors
-    P = convert_pairs_counts_to_matrix(real_pairs, nodes)
-    P_star = convert_pairs_counts_to_matrix(noisy_pairs, nodes)
-    P_hat = convert_pairs_counts_to_matrix(filtered_pairs, nodes)
-    fr = numpy.linalg.norm(P_hat - P, ord='fro')
-    nr = numpy.linalg.norm(P_star - P, ord='fro')
-    fn = numpy.linalg.norm(P_hat - P_star, ord='fro')
-    print fr, nr, fn, fr <= nr + fn, fr <= nr
-    fre = 0.0
-    cnt = 0
-    for i in xrange(nodes + 1):
-        for j in xrange(nodes + 1):
-            loc = (i, j)
-            if P[loc] != 0:
-                cnt += 1
-                fre += abs(P_hat[loc] - P[loc])/P[loc]
-    fre /= cnt
-    nre = 0.0
-    cnt = 0
-    for i in xrange(nodes + 1):
-        for j in xrange(nodes + 1):
-            loc = (i, j)
-            if P[loc] != 0:
-                cnt += 1
-                nre += abs(P_star[loc] - P[loc])/P[loc]
-    nre /= cnt
-    fne = 0.0
-    cnt = 0
-    for i in xrange(nodes + 1):
-        for j in xrange(nodes + 1):
-            loc = (i, j)
-            if P_star[loc] != 0:
-                cnt += 1
-                fne += abs(P_hat[loc] - P_star[loc])/P_star[loc]
-    fne /= cnt
-    print fre, nre, fne, fre <= nre + fne, fre <= nre
+    fr = compute_relative_error(filtered_pairs, real_pairs)
+    nr = compute_relative_error(noisy_pairs, real_pairs)
+    fn = compute_relative_error(filtered_pairs, noisy_pairs)
+    print fr, nr, fn, fr <= nr
 
 if __name__ == '__main__':
     if len(sys.argv) not in [6, 7]:
