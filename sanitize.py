@@ -10,7 +10,7 @@ import sys
 def usage():
     print sys.argv[0], ": Differentially private trajectory mining"
     print "Usage:"
-    print "\t{0} epsilon nodes lmax tmax [seed]".format(sys.argv[0])
+    print "\t{0} epsilon nodes lmax tmax size [seed]".format(sys.argv[0])
     sys.exit(-1)
 
 def print_call(*args):
@@ -19,6 +19,7 @@ def print_call(*args):
             \tnodes = {:d}\n\
             \tlmax = {:d}\n\
             \ttmax = {:d}\n\
+            \tsize = {:d}\n\
             \tseed = {:d}\n\
             ".format(*args)
 
@@ -108,7 +109,7 @@ def env_setup(seed):
     random.seed(seed)
     numpy.random.seed(seed)
 
-def main(epsilon, nodes, lmax, tmax, seed):
+def main(epsilon, nodes, lmax, tmax, size, seed):
     env_setup(seed)
 
     # Read graph
@@ -129,19 +130,19 @@ def main(epsilon, nodes, lmax, tmax, seed):
     #print "Transactions:\n", transactions
 
     # Compute pair counts
-    real_pairs = get_real_counts(graph, nodes, transactions, lmax)
-    print "Real pair counts:"
-    print convert_pairs_counts_to_matrix(real_pairs, nodes)
+    real_pairs = get_real_counts(graph, nodes, transactions, lmax, size)
+    print "Real counts:"
+    print real_pairs
 
     # Add noise to pairs
     noisy_pairs = add_noise(real_pairs, lmax + 1, epsilon)
-    print "Noisy pair counts:"
-    print convert_pairs_counts_to_matrix(noisy_pairs, nodes)
+    print "Noisy counts:"
+    print noisy_pairs
 
     # Compute approximation
     filtered_pairs = postprocess(noisy_pairs, nodes)
     print "Final approximation:"
-    print convert_pairs_counts_to_matrix(filtered_pairs, nodes)
+    print filtered_pairs
 
     # Get errors
     P = convert_pairs_counts_to_matrix(real_pairs, nodes)
@@ -181,16 +182,17 @@ def main(epsilon, nodes, lmax, tmax, seed):
     print fre, nre, fne, fre <= nre + fne, fre <= nre
 
 if __name__ == '__main__':
-    if len(sys.argv) not in [5, 6]:
+    if len(sys.argv) not in [6, 7]:
         usage()
     try:
         epsilon = float(sys.argv[1])
         nodes = int(sys.argv[2])
         lmax = int(sys.argv[3])
         tmax = int(sys.argv[4])
-        seed = 42 if len(sys.argv) == 5 else int(sys.argv[5])
+        size = int(sys.argv[5])
+        seed = 42 if len(sys.argv) == 6 else int(sys.argv[6])
     except Exception as e:
         print e
         usage()
-    print_call(epsilon, nodes, lmax, tmax, seed)
-    main(epsilon, nodes, lmax, tmax, seed)
+    print_call(epsilon, nodes, lmax, tmax, size, seed)
+    main(epsilon, nodes, lmax, tmax, size, seed)
