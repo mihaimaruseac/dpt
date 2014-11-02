@@ -50,19 +50,19 @@ def get_real_counts(graph, nodes, transactions, lmax, size=2):
     matrix -- the adjacency matrix -- and transactions as a list of lists.
     """
     ret = {}
-    for fragment in itertools.product(xrange(1, nodes+1), repeat=size - 1):
-        if is_path_in_graph(graph, fragment):
-            ret[tuple([0] + list(fragment))] = 0
-            ret[tuple(list(fragment) + [0])] = 0
-    for path in itertools.product(xrange(1, nodes+1), repeat=size):
-        if is_path_in_graph(graph, path):
-            ret[path] = 0
+    pad = [0]
+    for start in xrange(size):
+        for fragment in itertools.product(xrange(1, nodes+1), repeat=size - start):
+            pad = [0] * start
+            if is_path_in_graph(graph, fragment):
+                ret[tuple(pad + list(fragment))] = 0
+                ret[tuple(list(fragment) + pad)] = 0
     for t in transactions:
-        t = [0] + t + [0] # add extra edges to start and end
+        t = pad + t + pad # add extra edges to start and end
         lists = [t[i:] for i in xrange(size)]
         for path in itertools.izip(*lists):
             if not ret.has_key(path):
-                raise Exception("Invalid transaction found: {}".format(t))
+                raise Exception("Invalid transaction found: {} {}".format(t, path))
             ret[path] += 1
     return ret
 
