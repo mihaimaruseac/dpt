@@ -80,32 +80,28 @@ def postprocess(noisy_counts, nodes):
     Post process the noisy_counts to ensure sum consistency across rows and
     columns of implied matrix.
     """
-    dim = nodes + 1
-    A = numpy.zeros([2 * dim, len(noisy_counts)])
-    b = numpy.zeros([2 * dim, 1])
     keys = noisy_counts.keys()
-    for i in xrange(nodes+1):
-        s = [0, 0]
-        for j in xrange(len(keys)):
-            p = keys[j]
-            for k in [0, 1]:
-                if p[k] == i:
-                    A[(2 * i + k, j)] = 1
-                    s[k] += noisy_counts[p]
-        avg_s = sum(s) / 2
-        for k in [0, 1]:
-            b[2 * i + k] = avg_s - s[k]
-    print len(noisy_counts)
-    print A
-    print b
-    print numpy.linalg.matrix_rank(A), 2 * dim - 1
+    path_fragments = list(set(itertools.chain.from_iterable(
+        [[k[1:], k[:-1]] for k in keys])))
+    dim = len(path_fragments)
+    A = numpy.zeros([2 * dim, len(keys)])
+    b = numpy.zeros([2 * dim, 1])
+    for i in xrange(dim):
+        p = path_fragments[i]
+        s_from = sum([noisy_counts[k] for k in keys if k[1:]  == p])
+        s_to   = sum([noisy_counts[k] for k in keys if k[:-1] == p])
+        s = sum([s_from, s_to]) / 2
+        A[2*i]   = [1 if k[1:]  == p else 0 for k in keys]
+        A[2*i+1] = [1 if k[:-1] == p else 0 for k in keys]
+        b[2*i]   = s - s_from
+        b[2*i+1] = s - s_to
     assert numpy.linalg.matrix_rank(A) <= 2 * dim - 1
     sol = numpy.linalg.lstsq(A, b)[0]
 
     ret =  {}
-    for j in xrange(len(noisy_counts)):
+    for j in xrange(len(keys)):
         k = keys[j]
-        ret[k] = sol[(j,0)] + noisy_counts[k]
+        ret[k] = noisy_counts[k] + sol[(j,0)]
     return ret
 
 def compute_relative_error(term1, term2):
