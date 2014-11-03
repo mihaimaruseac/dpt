@@ -85,7 +85,7 @@ def postprocess(noisy_counts, nodes):
         [[k[1:], k[:-1]] for k in keys])))
     dim = len(path_fragments)
     A = numpy.zeros([2 * dim, len(keys)])
-    b = numpy.zeros([2 * dim, 1])
+    b = numpy.zeros([2 * dim])
     for i in xrange(dim):
         p = path_fragments[i]
         s_from = sum([noisy_counts[k] for k in keys if k[1:]  == p])
@@ -95,13 +95,15 @@ def postprocess(noisy_counts, nodes):
         A[2*i+1] = [1 if k[:-1] == p else 0 for k in keys]
         b[2*i]   = s - s_from
         b[2*i+1] = s - s_to
+    print "rank = {}, cond_num = {}".format(numpy.linalg.matrix_rank(A),
+            numpy.linalg.cond(A))
     assert numpy.linalg.matrix_rank(A) <= 2 * dim - 1
     sol = numpy.linalg.lstsq(A, b)[0]
 
     ret =  {}
     for j in xrange(len(keys)):
         k = keys[j]
-        ret[k] = noisy_counts[k] + sol[(j,0)]
+        ret[k] = noisy_counts[k] + sol[j]
     return ret
 
 def compute_relative_error(term1, term2):
