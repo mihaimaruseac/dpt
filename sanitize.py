@@ -98,7 +98,10 @@ def postprocess(noisy_counts, nodes):
     print "rank = {}, cond_num = {}".format(numpy.linalg.matrix_rank(A),
             numpy.linalg.cond(A))
     assert numpy.linalg.matrix_rank(A) <= 2 * dim - 1
-    sol = numpy.linalg.lstsq(A, b)[0]
+    sol, residuals, rank, s = numpy.linalg.lstsq(A, b)
+    print "residuals", residuals
+    print "rank", rank
+    print "s", s
 
     ret =  {}
     for j in xrange(len(keys)):
