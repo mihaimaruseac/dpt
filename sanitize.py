@@ -147,7 +147,6 @@ def main(epsilon, nodes, lmax, tmax, size, seed):
     real_pairs = get_real_counts(graph, nodes, transactions, lmax, size)
     print "Real counts:"
     print real_pairs
-    print postprocess(real_pairs, nodes)
 
     # Add noise to pairs
     noisy_pairs = add_noise(real_pairs, lmax + 1, epsilon)
