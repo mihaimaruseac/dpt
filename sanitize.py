@@ -113,7 +113,7 @@ def compute_relative_error(term1, term2):
     err = 0.0
     cnt = 0
     for k in term1.keys():
-        if term1[k] != 0:
+        if term1[k] != 0 and 0 not in k:
             cnt += 1
             err += abs(term1[k] - term2[k])/abs(0.0 + term1[k])
     return err/cnt
